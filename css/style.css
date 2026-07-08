@@ -1,0 +1,917 @@
+/* 左邊兵欄 */
+
+/* 強制將傭兵列表 (merc-container) 的捲軸固定為你需要的樣子 */
+#merc-container {
+    overflow-y: auto;
+    /* 確保佢唔會受其他全域滾動條影響 */
+}
+
+/* 針對傭兵列表專用的滾動條樣式 */
+#merc-container::-webkit-scrollbar {
+    width: 8px; /* 寬度 */
+    background: #111; /* 背景深色 */
+}
+
+#merc-container::-webkit-scrollbar-thumb {
+    background: #444; /* 滑塊灰色 */
+    border: 1px solid #222;
+    border-radius: 4px;
+}
+
+#merc-container::-webkit-scrollbar-thumb:hover {
+    background: #666; /* 懸停時變亮 */
+}
+
+.merc-row {
+    display: flex;
+    align-items: center;
+    height: 25px; /* 極度精簡高度 */
+    font-size: 12px;
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+}
+.hp-bar { width: 50px; height: 8px; background: #500; } /* 縮細個 bar */
+
+.merc-card {
+    border: none !important; /* 殺掉框框 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* 改用極淡嘅分隔線 */
+    margin-bottom: 0 !important;
+    padding: 6px 4px !important;
+    background: linear-gradient(145deg, #1f1d1a, #0f0e0d);
+    border: 2px solid #3d3625;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 1px;
+    color: #e0d8c3;
+    font-family: 'Segoe UI', sans-serif;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+	
+}
+
+.merc-details-panel {
+    position: absolute;
+    left: 100%;       /* 移到卡片右側 */
+    top: 0;
+    width: 250px;     /* 設定右側面板寬度 */
+    background: #1a1a1a;
+    padding: 15px;
+    border: 1px solid #444;
+    z-index: 999;     /* 確保它浮在最上面 */
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+}
+
+/* 血條內數字樣式 */
+.bar-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 1px black; /* 加黑邊令文字更清晰 */
+    line-height: 12px; /* 要同條 Bar 高度一樣 */
+    pointer-events: none; /* 唔會擋住點擊 */
+}
+
+/* 確保 Bar 係相對定位 */
+.bar-container-relative {
+    position: relative;
+    background: #000;
+    height: 16px; /* 稍微加高少少俾數字顯眼啲 */
+    margin-bottom: 6px;
+    border: 1px solid #333;
+    overflow: hidden;
+}
+
+
+/* 傭兵名字 - 金色閃耀效果 */
+.merc-name {
+    font-weight: bold;
+    color: #d4af37;
+    margin-bottom: 10px;
+    font-size: 15px;
+    border-bottom: 1px solid #3d3625;
+    padding-bottom: 5px;
+}
+
+/* 數據文字 */
+.stat-label {
+    font-size: 11px;
+    margin-bottom: 4px;
+    color: #aaa;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 血條與藍條容器 */
+.bar-bg {
+    background: #000;
+    height: 10px;
+    width: 100%;
+    border-radius: 0;
+    margin-bottom: 10px;
+    border: 1px solid #2a2a2a;
+    overflow: hidden;
+}
+
+/* 血條填充 */
+.hp-fill {
+    background: linear-gradient(90deg, #d43d3d, #8b1a1a);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* 藍條填充 */
+.mp-fill {
+    background: linear-gradient(90deg, #3d6bd4, #1a3a8b);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* 空位顯示 */
+.empty-slot {
+    border: 2px dashed #333;
+    padding: 20px;
+    text-align: center;
+    color: #555;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+/* 新增 EXP 條 */
+.exp-fill {
+    background: linear-gradient(90deg, #d4af37, #f3d46a); /* 金黃色 */
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* 屬性點數容器 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 分成左右兩欄 */
+    gap: 5px;
+    margin-top: 8px;
+    font-size: 10px;
+    color: #d4af37;
+    background: rgba(0,0,0,0.3);
+    padding: 5px;
+    border-radius: 4px;
+}
+
+
+/* 血條外框 */
+.hp-bar-container {
+    width: 100%;
+    height: 20px;
+    background-color: #333; /* 底色 */
+    border: 1px solid #000;
+    border-radius: 4px;
+    overflow: hidden; /* 確保入面啲血條唔會爆出界 */
+    margin-top: 5px;
+}
+
+/* 血條填充部分 */
+#enemy-hp-fill {
+    height: 100%;
+    background-color: #e11d48; /* 紅色血條 */
+    width: 100%; /* 預設滿血 */
+    transition: width 0.3s ease; /* 加啲平滑過渡效果 */
+}
+
+/* 設定戰鬥區域背景 */
+.control-section {
+    background: #1a1a1a;
+    padding: 20px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* 霓虹風格按鈕 */
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #444;
+    background: #222;
+    color: #00ffcc; /* 霓虹青色字 */
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    border-radius: 2px;
+}
+
+button:hover {
+    box-shadow: 0 0 10px #00ffcc;
+    border-color: #00ffcc;
+}
+
+/* 掛機按鈕 - 專屬酷炫狀態 */
+#auto-battle-btn {
+    width: 100%;
+    border-color: #00ffcc;
+}
+
+#auto-battle-btn.active {
+    background: #b91c1c;
+    color: white;
+    box-shadow: 0 0 20px #ff0000;
+    border-color: #ff0000;
+    animation: pulse 1.5s infinite; /* 閃爍特效 */
+}
+
+/* 閃爍動畫 */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.control-section {
+    background: #1a1a1a;
+    padding: 20px;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+.section-title {
+    color: #888;
+    font-size: 0.85em;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+/* 技能區 */
+.skill-area {
+    margin-bottom: 25px; /* 同下面的掛機區拉開距離 */
+}
+
+/* 掛機區：加一條幼線在上面，視覺上完全分開 */
+.auto-battle-area {
+    padding-top: 15px;
+    border-top: 1px solid #333; /* 這裡就是那條分隔線 */
+}
+
+/* 按鈕排列 */
+#skill-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+
+
+/* ==========背包系統CSS========*/
+
+
+
+/* ========== 遊戲 UI 命名空間 (rpg-) ========== */
+
+:root {
+    --rpg-bg: #111111;
+    --rpg-panel: #1e1e1e;
+    --rpg-border: #333333;
+    --rpg-gold: #ffd700;
+}
+
+/* 1. 主容器 */
+.rpg-inv-wrapper {
+    background: var(--rpg-bg);
+    border: 1px solid var(--rpg-border);
+    border-radius: 4px;
+    padding: 20px;
+    color: #cccccc;
+}
+
+/* 2. 傭兵切換欄 */
+/* 傭兵陣容切換欄優化 */
+
+.rpg-inv-btn {
+    background: #1a1a1a;
+    color: #888;
+    border: 1px solid #333;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease; /* 平滑過渡 */
+    font-size: 14px;
+    outline: none;
+}
+
+/* 懸停效果：亮起邊框 */
+.rpg-inv-btn:hover {
+    background: #252525;
+    color: #fff;
+    border-color: #555;
+}
+
+.rpg-inv-btn.is-active {
+    background: #252525;
+    color: var(--rpg-gold);
+    border: 1px solid var(--rpg-gold);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+.rpg-inv-profile-header {
+    display: flex; /* 關鍵：強制並排 */
+    gap: 15px;      /* 人像同屬性之間嘅距離 */
+    margin-bottom: 15px;
+}
+
+.rpg-inv-portrait-square {
+    width: 110px;
+    height: 110px; /* 同闊度一樣，保證正方形 */
+    background: #1a1a1a;
+    border: 1px solid var(--rpg-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* 確保唔會被壓縮 */
+}
+
+/* 右邊屬性區容器 */
+.rpg-inv-stats-container {
+    flex: 1; /* 佔用剩餘空間 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 垂直置中對齊人像 */
+    gap: 10px;
+}
+
+.rpg-inv-stats-panel {
+    background: #111;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.rpg-inv-attr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 10px;
+    color: #ffd700; /* 屬性用金黃色字體 */
+}
+
+.rpg-inv-party-container {
+    border-bottom: 1px solid var(--rpg-border);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.rpg-inv-party-tab.is-active {
+    color: var(--rpg-gold);
+    border-bottom: 2px solid var(--rpg-gold);
+}
+
+.rpg-inv-party-tab.is-active {
+    color: var(--rpg-gold);
+    border-bottom: 2px solid var(--rpg-gold);
+}
+
+/* 狀態：懸停同選中 */
+.rpg-inv-party-tab:hover { background: #333; color: #fff; }
+
+.rpg-inv-party-tab.is-active {
+    background: #1a1a1a; /* 同背景連埋一齊 */
+    color: #fff;
+    border-bottom: 3px solid #3498db; /* 藍色底線，醒目啲 */
+}
+
+/* 3. 左右分欄 */
+.rpg-inv-main-content { display: flex; gap: 20px; }
+.rpg-inv-right-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* 讓容器撐滿父層 */
+    max-width: 800px; /* 根據您的設計調整，例如 800px */
+}
+
+/* 4. 左邊組件 */
+.rpg-inv-char-portrait { background: #222; padding: 20px; text-align: center; }
+.rpg-inv-char-stats { font-size: 14px; }
+
+
+/* --- 配色方案 (賦予靈魂) --- */
+.rpg-inv-status__bar-fill--hp { background-color: #b30000; }  /* 深紅 */
+.rpg-inv-status__bar-fill--mp { background-color: #004db3; }  /* 深藍 */
+.rpg-inv-status__bar-fill--exp { background-color: #b38600; } /* 深金 */
+
+/* --- 文字 Overlay 設定 --- */
+.rpg-inv-status__overlay-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* 令文字置中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* 令文字顯眼嘅技巧：加個極細嘅陰影 (text-shadow) */
+    font-size: 13px;
+    color: #ffffff; /* 白色文字 */
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8); /* 黑邊令文字浮出黎 */
+    
+    /* 防止文字被選中 (UI 體驗更好) */
+    user-select: none;
+    pointer-events: none;
+}
+
+
+
+
+
+
+/* 小分頁 (Tab) 樣式 - 針對九宮格 */
+.rpg-inv-equip-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.rpg-inv-tab-small.active {
+    background: #555;
+    color: #fff;
+}
+
+
+
+.rpg-inv-slot:hover {
+    border-color: #444;
+    background: #1e1e1e;
+}
+
+/* 5. 右邊組件 */
+
+
+.rpg-inv-category-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+
+//================背包=============
+
+
+/* 右側詳細內容區域 */
+.rpg-inv-desc-box {
+    width: 250px;
+    height: 400px;
+    padding: 15px;
+    border: 1px solid #333;
+    background: #111;
+    color: white;
+    flex-shrink: 0;
+}
+
+//============背包裝備內容===========
+
+#item-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* 半透明黑底 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+#item-modal-overlay.hidden { display: none; }
+
+#item-detail-modal {
+    background: #1a1a1a;
+    border: 2px solid #b8860b;
+    padding: 20px;
+    width: 300px; /* 同你之前定義一樣 */
+    color: #e0e0e0;
+}
+
+#item-detail-panel {
+    display: none; /* 預設隱藏 */
+    position: fixed; /* 固定定位，唔會隨便排版 */
+    top: 50%; left: 50%; /* 置中 */
+    transform: translate(-50%, -50%);
+    z-index: 1000; /* 確保浮喺最上面 */
+    
+    /* 保持你原本嘅樣式 */
+    background: #1a1a1a;
+    border: 2px solid #b8860b;
+    padding: 20px;
+    width: 250px;
+    color: #e0e0e0;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+//============背包============
+
+
+//============裝備九宮格============
+
+/* 刪除或註解掉上面嗰個 #equipment-grid */
+
+#equipment-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 80px) !important; /* 強制 3 欄 */
+    grid-template-rows: repeat(3, 80px) !important;    /* 強制 3 行 */
+    gap: 4px !important;
+    width: 250px; 
+    margin-top: 10px;
+}
+
+.rpg-inv-equip-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
+    gap: 4px;
+    width: 248px;
+    margin-top: 10px;
+    background: #1a1a1a;
+}
+
+.rpg-inv-slot {
+    width: 80px; 
+    height: 80px;
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    transition: all 0.2s;
+}
+
+//=======背包右邊角色資料=====
+
+#inv-char-stats-panel {
+    /* 強制顯示為一個區塊，唔好用 contents */
+    display: block; 
+    
+    /* 基礎樣式 */
+    width: 200px;
+    background-color: #1a1a1a;
+    border: 2px solid #b8860b; /* 金色邊框 */
+    border-radius: 8px;
+    padding: 15px;
+    color: #e0e0e0;
+    
+    /* 確保佢唔會變形 */
+    box-sizing: border-box; 
+    height: fit-content;
+}
+
+
+/* 隱藏 details 預設的三角形符號 */
+details summary::-webkit-details-marker {
+    display: none;
+}
+details summary {
+    list-style: none; /* 針對 Firefox 等瀏覽器 */
+}
+
+
+/* 1. 確保父容器允許內部元素填滿空間 */
+.rpg-inv-right-content-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* 絕對唔准換行 */
+    align-items: flex-start !important;
+}
+
+
+/* 暴力提升權重，確保唔會被任何其他樣式蓋過 */
+/* 背包容器 */
+body .rpg-inv-right-content-wrapper #rpg-inv-inventory-grid {
+    display: grid !important;
+    grid-template-columns: repeat(8, 50px) !important;
+    grid-auto-rows: 50px !important;
+    
+    width: 467px !important;
+    min-width: 467px !important;
+    
+    /* 【關鍵】鎖死最大高度，超過就會有 Scrollbar */
+    height: 350px !important; /* 假設一行 50px，咁樣大約顯示 6-7 行 */
+    overflow-y: auto !important; /* 超過高度就出現碌碌 */
+    
+    gap: 5px !important;
+    padding: 10px !important;
+    background: #111 !important;
+    border: 2px solid #555 !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+}
+
+/* 所有的格仔樣式 */
+.rpg-inv-item-slot {
+    width: 50px !important;
+    height: 50px !important;
+    background-color: #222 !important;
+    border: 1px solid #444 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    color: white !important;
+    font-size: 12px !important;
+    box-sizing: border-box !important;
+}
+
+/* 滑鼠經過效果 */
+.rpg-inv-item-slot:hover {
+    /* 1. 邊框變亮金色 */
+    border-color: #ffcc00 !important;
+    
+    /* 2. 背景變淺，製造層次感 */
+    background-color: #3a3a3a !important;
+    
+    /* 3. 【立體感】加內陰影，令格仔邊緣有凹陷感 */
+    box-shadow: 
+        inset 0 0 10px rgba(255, 204, 0, 0.5), /* 金色內光 */
+        0 4px 8px rgba(0, 0, 0, 0.5) !important; /* 外陰影，令格仔浮起 */
+    
+    /* 4. 【浮動感】滑鼠移上去時格仔輕微放大少少 */
+    transform: translateY(-2px) scale(1.05) !important;
+    
+    /* 5. 確保文字亦變色配合 */
+    color: #ffffff !important;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 自定義 Scrollbar 外觀 */
+#rpg-inv-inventory-grid::-webkit-scrollbar {
+    width: 8px;
+}
+#rpg-inv-inventory-grid::-webkit-scrollbar-track {
+    background: #111;
+}
+#rpg-inv-inventory-grid::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+#rpg-inv-inventory-grid::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+//=========商店========
+
+/* --- 巨商風格商店整體設定 --- */
+.geishang-shop-wrapper {
+    background-color: #141414; /* 巨商深黑底色 */
+    border: 1px solid #444;   /* 外框 */
+    padding: 15px;
+    color: #ccc;              /* 預設文字顏色 */
+    font-family: "Microsoft JhengHei", Arial, sans-serif; /* 中文字體 */
+    width: 800px;             /* 參考你張圖嘅闊度 */
+    margin: 20px auto;
+}
+
+/* --- Tabs 樣式 --- */
+.geishang-tabs {
+    display: flex;
+    border-bottom: 2px solid #c69c6d; /* 金色底線 */
+    margin-bottom: 15px;
+}
+
+.geishang-tab-btn {
+    background: #252525;      /* 按鈕深底色 */
+    color: #888;              /* 未選中文字色 */
+    border: 1px solid #444;   /* 按鈕框 */
+    border-bottom: none;      /* 底部唔好有線，連住金色線 */
+    padding: 10px 25px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-right: 2px;
+    transition: all 0.3s;
+}
+
+.geishang-tab-btn:hover {
+    background: #333;
+    color: #fff;
+}
+
+/* 巨商風格：選中時變淺色底，加粗字 */
+.geishang-tab-btn.active {
+    background: #e0e0e0;      /* 選中底色 (偏白灰) */
+    color: #000;              /* 選中文字色 (黑) */
+    font-weight: bold;
+    border-color: #c69c6d;
+}
+
+/* --- 內容面板 (像傭兵框) --- */
+.geishang-panel {
+    background: #1a1a1a;      /* 稍微淺少少嘅黑 */
+    border: 1px solid #c69c6d; /* 金色框 */
+    padding: 15px;
+    min-height: 300px;
+}
+
+/* --- 物品行樣式 --- */
+.shop-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #333; /* 分隔線 */
+}
+
+.shop-item-row:hover {
+    background-color: #222; /* hover 時高亮 */
+}
+
+.item-name {
+    color: #f0f0f0;
+    font-weight: bold;
+}
+
+.item-price {
+    color: #c69c6d; /* 金色價錢 */
+    margin-right: 20px;
+}
+
+/* --- 購買按鈕 (像確認招募按鈕) --- */
+.item-buy-btn {
+    background-color: #8b0000; /* 巨商深紅 */
+    color: white;
+    border: 1px solid #555;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.item-buy-btn:hover {
+    background-color: #a00000;
+}
+
+/* 針對購買框內的 input 進行美化 */
+#buy-amount {
+    background-color: #000;      /* 強制黑色底，保證清晰 */
+    color: #fff;                 /* 白色字 */
+    border: 1px solid #c69c6d;   /* 跟返你嘅金色邊框 */
+    padding: 5px;
+    font-size: 16px;
+    width: 60px;
+    text-align: center;
+}
+
+/* 移除焦點時的 Highlight (即係你話要 highlight 先睇到嗰個藍框) */
+#buy-amount:focus {
+    outline: none;
+    border-color: #e0e0e0;       /* 聚焦時轉個淺色邊框提示 */
+}
+
+/* 對話框內按鈕樣式 */
+#buy-dialog button {
+    background: #252525;
+    color: #c69c6d;              /* 金色字 */
+    border: 1px solid #c69c6d;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+#buy-dialog button:hover {
+    background: #c69c6d;
+    color: #000;
+}
+
+//============== Credit ===========
+
+.footer-credit {
+    position: fixed;
+    /* 呢度決定位置 */
+    bottom: 10px;    /* 離底 10px */
+    right: 10px;     /* 離右 10px (原本你應該係寫咗 left: 0 或冇寫) */
+    
+    /* 呢度決定樣式 */
+    font-size: 12px;
+    color: #fff;     /* 白色 */
+    opacity: 0.5;    /* 半透明 */
+    pointer-events: none;
+    z-index: 9999;
+}
+
+
+// ================倉庫=============
+
+/* --- Barracks 系統 CSS --- */
+
+/* 外層大框 */
+#BarracksMainFrame {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    padding: 15px;
+    width: 95%;
+    max-width: 1200px;
+    margin: 10px auto;
+    box-shadow: 0 0 15px rgba(0,0,0,0.8);
+    box-sizing: border-box;
+}
+
+/* 內層邊框 */
+.BarracksInnerWrapper {
+    border: 1px solid #444;
+    padding: 10px;
+}
+
+/* 全域狀態欄 */
+#BarracksStatusBar {
+    border: 1px solid #f1c40f;
+    color: #f1c40f;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #1a1a1a;
+    display: flex;
+    justify-content: space-around;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+/* Tab 按鈕區 */
+#BarracksTabContainer {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.BarracksTabBtn {
+    background: #222;
+    border: 1px solid #555;
+    color: #aaa;
+    padding: 8px 25px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.BarracksTabBtn:hover, .BarracksTabBtn.active {
+    border-color: #f1c40f;
+    color: #f1c40f;
+    background: #333;
+}
+
+/* 內容區 */
+#BarracksSubContent {
+    border: 1px solid #f1c40f;
+    min-height: 400px;
+    padding: 20px;
+    color: #ccc;
+    background: #0d0d0d;
+}
+
+/* 左右分欄布局 */
+.BarracksFlexContainer {
+    display: flex;
+    gap: 20px;
+}
+
+.BarracksColumn {
+    flex: 1;
+    border: 1px solid #333;
+    padding: 15px;
+    background: #151515;
+    border-radius: 4px;
+}
+
+/* 卡片式項目 */
+.BarracksItemCard {
+    background: #222;
+    border: 1px solid #444;
+    padding: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #eee;
+}
+
+.BarracksItemCard button {
+    background: #333;
+    color: #f1c40f;
+    border: 1px solid #f1c40f;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+.BarracksGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 每行 4 個頭像 */
+    gap: 10px;
+    padding: 10px;
+}
+
+.BarracksUnitBox {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #f1c40f; /* 金邊 */
+    background: #000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.BarracksUnitBox img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
