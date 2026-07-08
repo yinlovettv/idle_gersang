@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <title>巨商網頁版測試</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+
+<body class="bg-slate-950 text-slate-100 h-screen overflow-hidden p-3 flex gap-3">
+
+<div id="start-menu" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-50">
+    <h1 class="text-4xl font-bold mb-8">放置巨商 Beta</h1>
+    
+    <!-- 喺呢度加 -->
+    <div class="fixed bottom-4 left-4 text-gray-500 text-sm opacity-150">
+        本遊戲為非官方免費作品 嚴禁商業用途 只為交流 創作者: 手然
+    </div>
+
+    <button onclick="switchPage('save-slot-menu')" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded text-xl">開始遊戲</button>
+</div>
+
+<div id="save-slot-menu" class="hidden fixed inset-0 bg-slate-950 flex flex-col items-center justify-center p-4">
+    <h2 id="menu-title" class="text-3xl font-bold mb-6 text-yellow-500">選擇存檔位</h2>
+    <div class="load-menu w-full max-w-2xl">
+        <div id="slot-container"></div>
+    </div>
+    <button onclick="switchPage('start-menu')" class="mt-6 px-6 py-2 bg-slate-700 rounded">返回</button>
+</div>
+
+<div id="creation-menu" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 hidden">
+
+    <div class="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-full max-w-5xl flex gap-6 p-6">
+        
+<div class="w-1/3 flex flex-col items-center">
+    <div class="w-full h-96 bg-slate-800 rounded mb-4 border border-slate-700 flex items-center justify-center overflow-hidden">
+        <img id="player-avatar" src="assets/character/japan_male.png" alt="角色立繪" class="h-full object-cover">
+    </div>
+</div>
+
+        <div class="w-1/3 flex flex-col gap-6">
+            <div>
+                <h2 class="text-xl font-bold mb-3 border-b border-slate-700 pb-2">選擇國家</h2>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="selectOption(this, 'nation')" data-value="japan" class="nation-btn bg-slate-800 p-2 rounded border border-slate-700 hover:border-slate-500 transition">日本</button>
+                    <button onclick="selectOption(this, 'nation')" data-value="korea" class="nation-btn bg-slate-800 p-2 rounded border border-slate-700 hover:border-slate-500 transition">朝鮮</button>
+                    <button onclick="selectOption(this, 'nation')" data-value="taiwan" class="nation-btn bg-slate-800 p-2 rounded border border-slate-700 hover:border-slate-500 transition">台灣</button>
+                    <button onclick="selectOption(this, 'nation')" data-value="china" class="nation-btn bg-slate-800 p-2 rounded border border-slate-700 hover:border-slate-500 transition">中國</button>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-bold mb-3 border-b border-slate-700 pb-2">性別</h2>
+                <div class="flex gap-2">
+                    <button onclick="selectOption(this, 'gender')" data-value="male" class="gender-btn flex-1 bg-slate-800 p-2 rounded border border-slate-700 transition">男</button>
+                    <button onclick="selectOption(this, 'gender')" data-value="female" class="gender-btn flex-1 bg-slate-800 p-2 rounded border border-slate-700 transition">女</button>
+                </div>
+            </div>
+        </div>
+
+<div class="w-1/3 flex flex-col gap-4">
+    <h2 class="text-xl font-bold border-b border-slate-700 pb-2">2. 分配能力 (剩餘: <span id="bonus-points" class="text-yellow-400">10</span>)</h2>
+    
+
+    <div class="space-y-3">
+        <div class="flex justify-between items-center bg-slate-800 p-2 px-4 rounded border border-slate-700">
+            <span class="text-sm">力量: <span id="val-str" class="text-blue-400 font-bold">10</span></span>
+            <div class="flex gap-2">
+                <button onclick="changePoint('str', -1)" class="w-8 h-8 bg-red-600 hover:bg-red-500 rounded font-bold">-</button>
+                <button onclick="changePoint('str', 1)" class="w-8 h-8 bg-green-600 hover:bg-green-500 rounded font-bold">+</button>
+            </div>
+        </div>
+        <div class="flex justify-between items-center bg-slate-800 p-2 px-4 rounded border border-slate-700">
+            <span class="text-sm">敏捷: <span id="val-dex" class="text-green-400 font-bold">10</span></span>
+            <div class="flex gap-2">
+                <button onclick="changePoint('dex', -1)" class="w-8 h-8 bg-red-600 hover:bg-red-500 rounded font-bold">-</button>
+                <button onclick="changePoint('dex', 1)" class="w-8 h-8 bg-green-600 hover:bg-green-500 rounded font-bold">+</button>
+            </div>
+        </div>
+        <div class="flex justify-between items-center bg-slate-800 p-2 px-4 rounded border border-slate-700">
+            <span class="text-sm">體質: <span id="val-vit" class="text-orange-400 font-bold">10</span></span>
+            <div class="flex gap-2">
+                <button onclick="changePoint('vit', -1)" class="w-8 h-8 bg-red-600 hover:bg-red-500 rounded font-bold">-</button>
+                <button onclick="changePoint('vit', 1)" class="w-8 h-8 bg-green-600 hover:bg-green-500 rounded font-bold">+</button>
+            </div>
+        </div>
+        <div class="flex justify-between items-center bg-slate-800 p-2 px-4 rounded border border-slate-700">
+            <span class="text-sm">智力: <span id="val-int" class="text-purple-400 font-bold">10</span></span>
+            <div class="flex gap-2">
+                <button onclick="changePoint('int', -1)" class="w-8 h-8 bg-red-600 hover:bg-red-500 rounded font-bold">-</button>
+                <button onclick="changePoint('int', 1)" class="w-8 h-8 bg-green-600 hover:bg-green-500 rounded font-bold">+</button>
+            </div>
+        </div>
+    </div>
+<input type="text" id="player-name-input" placeholder="請輸入英雄名字" 
+       maxlength="6"
+       class="bg-slate-800 border border-slate-700 p-3 rounded text-center w-full focus:ring-2 focus:ring-blue-500 outline-none">
+
+
+
+
+            <button onclick="createAndSave()" class="mt-auto w-full bg-blue-600 py-3 rounded font-bold hover:bg-blue-500">開始冒險</button>
+
+        </div>
+    </div> </div>
+
+<div id="game-container" style="display: none;" class="flex gap-3 w-full h-full">
+
+<div id="death-overlay" class="hidden fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <button onclick="revive()" 
+        class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-lg shadow-2xl text-2xl animate-pulse pointer-events-auto">
+    點擊這裡復活
+    </button>
+</div>
+
+    <aside class="w-80 min-w-[320px] flex flex-col gap-3 h-full shrink-0">
+
+<div id="info-card-bg" class="h-auto border border-slate-700 bg-slate-900/80 p-5 rounded shadow-lg shrink-0">
+    <div class="flex justify-between items-center mb-3">
+        <h2 id="display-name" class="font-bold text-2xl text-orange-400"></h2>
+        <span id="display-info" class="text-white font-bold bg-slate-700/80 px-3 py-1 rounded-md text-sm"></span>
+    </div>
+
+    <div class="bg-slate-800/50 border border-slate-600 rounded-lg p-3 mb-4">
+        <div class="flex justify-between items-center">
+            <span class="text-slate-300">等級: <span id="player-level" class="text-2xl text-white font-black"></span></span>
+            <span class="text-orange-400 font-bold bg-orange-900/20 px-2 py-1 rounded border border-orange-700/50">
+                剩餘紅利: <span id="player-bonus" class="text-lg">160</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="border-b border-slate-700 mb-3"></div>
+
+    <div class="flex justify-between text-lg mb-3">
+        <span class="text-slate-400 font-bold">銀兩:</span>
+        <span class="text-yellow-400 font-black text-xl" id="display-gold">0</span>
+    </div>
+
+<div class="grid grid-cols-2 gap-x-8 gap-y-3 mb-4">
+    <div class="flex justify-between items-center w-full">
+        <span class="font-bold text-blue-300">力量: <span id="stat-str" class="text-white text-base">10</span></span>
+        <button id="btn-str" 
+            onmousedown="startHoldAdd('player', 'str')" 
+            onmouseup="stopHoldAdd()" 
+            onmouseleave="stopHoldAdd()"
+            class="bg-blue-600 hover:bg-blue-500 text-white w-6 h-6 flex items-center justify-center rounded font-bold text-[10px] invisible transition-all">+</button>
+    </div>
+    <div class="flex justify-between items-center w-full">
+        <span class="font-bold text-green-300">敏捷: <span id="stat-dex" class="text-white text-base">10</span></span>
+        <button id="btn-dex" 
+            onmousedown="startHoldAdd('player', 'dex')" 
+            onmouseup="stopHoldAdd()" 
+            onmouseleave="stopHoldAdd()"
+            class="bg-blue-600 hover:bg-blue-500 text-white w-6 h-6 flex items-center justify-center rounded font-bold text-[10px] invisible transition-all">+</button>
+    </div>
+    <div class="flex justify-between items-center w-full">
+        <span class="font-bold text-red-300">體力: <span id="stat-con" class="text-white text-base">20</span></span>
+        <button id="btn-con" 
+            onmousedown="startHoldAdd('player', 'vit')" 
+            onmouseup="stopHoldAdd()" 
+            onmouseleave="stopHoldAdd()"
+            class="bg-blue-600 hover:bg-blue-500 text-white w-6 h-6 flex items-center justify-center rounded font-bold text-[10px] invisible transition-all">+</button>
+    </div>
+    <div class="flex justify-between items-center w-full">
+        <span class="font-bold text-purple-300">智力: <span id="stat-int" class="text-white text-base">10</span></span>
+        <button id="btn-int" 
+            onmousedown="startHoldAdd('player', 'int')" 
+            onmouseup="stopHoldAdd()" 
+            onmouseleave="stopHoldAdd()"
+            class="bg-blue-600 hover:bg-blue-500 text-white w-6 h-6 flex items-center justify-center rounded font-bold text-[10px] invisible transition-all">+</button>
+    </div>
+</div>
+
+    <div class="space-y-2">
+        <div class="h-6 bg-red-900 rounded relative overflow-hidden">
+            <div id="player-hp-bar" class="h-full bg-red-600 transition-all" style="width: 100%"></div>
+            <span id="player-hp-text" class="absolute inset-0 flex justify-center items-center text-xs font-bold text-white"></span>
+        </div>
+
+        <div class="h-6 bg-blue-900 rounded relative overflow-hidden">
+            <div id="player-mp-bar" class="h-full bg-blue-600 transition-all" style="width: 100%"></div>
+            <span id="player-mp-text" class="absolute inset-0 flex justify-center items-center text-xs font-bold text-white"></span>
+        </div>
+
+<div class="h-5 bg-yellow-900 rounded relative overflow-hidden">
+    <div id="player-exp-bar" class="h-full bg-yellow-500 transition-all" style="width: 70%"></div>
+    <span id="player-exp-text" class="absolute inset-0 flex justify-center items-center text-xs font-bold text-white">0%</span>
+</div>
+    </div>
+</div>
+
+<div id="mercenary-list" class="flex-1 border border-slate-700 bg-slate-900 rounded shadow-lg flex flex-col overflow-hidden">
+    <div id="merc-container" class="flex-1 overflow-y-auto ...">
+        <!-- 呢度唔使再寫死，JS 會自動填入 -->
+    </div>
+</div>
+<div id="right-side-detail-box" style="width: 300px; padding: 15px;"></div>
+
+    </aside>
+
+<div class="flex-1 flex flex-col gap-3 h-full overflow-hidden">
+    
+<nav class="h-14 bg-slate-900 border border-slate-700 rounded shadow-lg flex items-center px-6 gap-8 shrink-0">
+    <a href="#" class="nav-link ..." onclick="navigate('menu_village', this)">村莊</a>
+    <a href="#" class="nav-link ..." onclick="navigate('menu_battle', this)">戰鬥</a>
+    <a href="#" class="nav-link ..." onclick="navigate('menu_inventory', this)">背包</a>
+    <a href="#" class="nav-link ..." onclick="navigate('menu_trainingCenter', this)">訓練所</a>
+    <a href="#" class="nav-link ..." onclick="navigate('menu_mercenaryShop', this)">招募所</a>
+    <a href="#" class="nav-link ..." onclick="navigate('menu_shop', this)">商店</a>
+    <a href="#" class="nav-link ..." onclick="navigate('menu_barracks', this)">客棧</a>     
+    <a href="#" class="nav-link ..." onclick="navigate('menu_masamune', this)">政宗</a>
+    <a href="#" class="nav-link ..." onclick="navigate('menu_factory', this)">工廠</a>  
+
+
+<button onclick="saveGame()" 
+        class="ml-auto bg-[#2d3a4f] hover:bg-[#3b4b66] text-white text-sm font-bold py-2 px-4 rounded border border-slate-600 transition-all shadow-md">
+     💾 儲存
+</button>
+</nav>
+
+<!-- 呢個就係你個彈出設定框 -->
+<div id="skill-setting-popup" style="display: none; position: fixed; top: 20%; left: 30%; background: #1a1a1a; color: white; border: 1px solid #444; padding: 20px; z-index: 1000; border-radius: 8px;">
+</div>
+
+
+<div id="item-tooltip" style="
+    position: fixed; 
+    display: none; 
+    background: rgba(0, 0, 0, 0.9); 
+    color: white; 
+    padding: 10px; 
+    border: 1px solid #ffcc00; 
+    pointer-events: none; 
+    z-index: 9999;
+    font-size: 12px;
+    border-radius: 4px;">
+</div>    
+
+<div id="item-modal-overlay" class="hidden">
+    <div id="item-detail-modal">
+        <!-- 內容會由 JS 動態填入 -->
+        <div id="modal-content"></div>
+    </div>
+</div>
+
+<main class="flex-1 border border-slate-700 bg-slate-900 p-8 rounded shadow-lg overflow-y-auto">
+        <div id="main-content">
+        </div>
+</main>
+</div>
+
+<div id="item-detail-panel" style="display: none; position: fixed; ">
+    <!-- 內容會由 JS 塞入去 -->
+</div>
+
+<dialog id="buy-dialog" style="background: #1a1a1a; color: #fff; border: 2px solid #c69c6d; padding: 20px;">
+    <h3 id="dialog-item-name">物品名稱</h3>
+    <p>單價: <span id="dialog-item-price">0</span> 兩</p>
+    <label>數量: </label>
+    <input type="number" id="buy-amount" value="1" min="1" max="99" style="width: 50px;">
+    <br><br>
+    <button onclick="confirmPurchase()">確認購買</button>
+    <button onclick="document.getElementById('buy-dialog').close()">取消</button>
+</dialog>
+
+<style>
+    .footer-credit {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 12px;
+        color: #fff;
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 9999;
+    }
+</style>
+
+<div id="BarracksModal" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:#2c3e50; color:white; padding:20px; border:3px solid #f1c40f; z-index:1000; border-radius:10px;">
+    <div id="BarracksModalContent"></div>
+    <div style="margin-top:20px;">
+        <button id="BarracksModalYes" style="padding:10px 20px;">確定</button>
+        <button onclick="closeBarracksModal()" style="padding:10px 20px;">取消</button>
+    </div>
+</div>
+
+
+<div class="footer-credit">
+    本遊戲為非官方免費作品 嚴禁商業用途 創作者: 手然
+</div>
+
+<script>console.log("開始讀取");</script>
+<script src="js/00-data.js"></script>
+<script src="js/01-progression.js"></script>
+<script src="js/02-playerstate.js"></script>
+<script src="js/03-combat-engine.js"></script>
+<script src="js/04-map-engine.js"></script>
+<script src="js/05-inventory-system.js"></script> 
+<script src="js/06-equipment-system.js"></script>
+<script src="js/07-mercenary-system.js"></script>
+<script src="js/08-shop-manager.js"></script>
+<script src="js/09-barracks-system.js"></script>
+<script src="js/99-main-controller.js"></script>
+
+</body>
+</html>
